@@ -92,8 +92,8 @@ sudo apt upgrade
 ##### **Cuentas administradoras**
 
 > - [X] root(inicio)
-> - [ ] miadmin/paso
-> - [ ] miadmin2/paso
+> - [X] miadmin/paso
+> - [X] miadmin2/paso
 
 ##### **Habilitar cortafuegos**
 
@@ -102,9 +102,44 @@ como activar cortafuegos
 #### 1.1.2 Instalación del servidor web
 
 ##### Instalación
+
+```bash
+
+sudo apt update
+sudo apt upgrade
+
+sudo apt install apache2
+
+sudo ufw allow 80
+
+sudo ufw status numbered
+sudo ufw delete 'numeropuerto'
+
+```
 ##### Verficación del servicio
+
+```bash
+
+sudo service apache2 {opcion}
+sudo systemctl {opcion} apache2
+
+```
 ##### Virtual Hosts
 ##### Permisos y usuarios
+Creo un usuario y lo compruebo que está en la carpeta home /var/www/html y en el shell /bin/bash
+
+Ahora le ponemos la contraseña paso
+
+A continuación cambiamos los permisos de la carpeta para que el usuario operadorweb sea dueño de la carpeta /var/www/html
+
+```bash
+##Le damos la posesión de la carpeta a operadorweb
+sudo chown -R operadorweb:www-data /var/www/html
+
+##Le damos permisos de escritura, lectura y ejecución. Al resto de usuarios solo lectura.
+sudo chmod -R 775 /var/www/html
+
+```
 
 #### 1.1.3 PHP
 #### 1.1.4 MySQL
