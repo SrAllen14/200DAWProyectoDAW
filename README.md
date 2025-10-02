@@ -7,7 +7,7 @@
     - [1.1 Ubuntu Server 24.04.3 LTS](#11-ubuntu-server-24043-lts)
       - [1.1.1 **Configuración inicial**](#111-configuración-inicial)
         - [Nombre y configuración de red](#nombre-y-configuración-de-red)
-        - [**Actualizar el sistema**](#actualizar-el-sistema)
+      - [**Actualizar el sistema**](#actualizar-el-sistema)
         - [**Configuración fecha y hora**](#configuración-fecha-y-hora)
         - [**Cuentas administradoras**](#cuentas-administradoras)
         - [**Habilitar cortafuegos**](#habilitar-cortafuegos)
@@ -54,8 +54,25 @@ Este documento es una guía detallada del proceso de instalación y configuraci�
 > **Particiones**: 150G(/) y resto (350GB) (/var)\
 > **Configuración de red interface**: xxxx \
 > **Dirección IP** :10.199.11.90/22\
-> **GW**: xx.xx.xx.xx/22\
-> **DNS**: xx.xx.xx.xx
+> **GW**: 10.199.8.90/22\
+> **DNS**: 10.151.123.21\ o 10.151.126.21\
+
+Para comprobar todos estos valores debemos usar los siguientes comandos:
+```bash
+hostname
+sudo hostnamectl          #Comprobar el nombre, el sistema operativo, la arquitectura, etc...
+
+free -h                   #Comprobar la RAM total, en uso y libre. Parámetro -h para que salga  en Gb
+
+lsblk
+sudo fdisk -l /dev/sda    #Comprobar las distintas particiones del disco, su tamaño y su raíz
+
+ip a
+ip r                      #Comprobar IP y GW como se ve en las capturas de abajo
+
+sudo resolvectl status    #Comprobar el DNS (educa.jcyl.es)
+```
+
 
 Editar el fichero de configuración del interface de red  **/etc/netplan**.
 En este caso los datos introducidos son los mios personales pero cada uno 
@@ -80,7 +97,7 @@ network:
 ````
 
 
-##### **Actualizar el sistema**
+#### **Actualizar el sistema**
 ```bash
 sudo apt update
 sudo apt upgrade
@@ -103,20 +120,24 @@ como activar cortafuegos
 
 ##### Instalación
 
+Para instalar un servidor web vamos a descargar y configurar Apache. El primer paso es actualizar el SO y también los paquetes instalados. A continuación instalamos Apache2 y abrimos el puerto 80 que es el utilizados por Apache. Al abrir el puerto se abrirá tanto el normal como el (v6) y, por recomendación de seguridad, lo borraremos.
+
 ```bash
 
-sudo apt update
-sudo apt upgrade
+sudo apt update                         #Actualizamos OS
+sudo apt upgrade                        #Actualizamos paquetes instalados
 
-sudo apt install apache2
+sudo apt install apache2                #Instalamos Apache2 en la máquina
+  
+sudo ufw allow 80                       #Habilitamos el puerto 80 desde el cortafuegos.
 
-sudo ufw allow 80
-
-sudo ufw status numbered
-sudo ufw delete 'numeropuerto'
+sudo ufw status numbered                
+sudo ufw delete 'numeropuerto'          #Borramos el puerto 80 (v6) usando su número de indetificación
 
 ```
 ##### Verficación del servicio
+
+Para verificar que Apache se ha instalado y está funcionando correctamente tenemos dos formas: entrando a un navegador desde el ordenador anfitrión y buscando la página con al dirección IP de la máquina. Si aparece una página como la de abajo es que Apache esta funcionando correctamente y que ambas máquinas están en la misma red. La otra forma es mediante los siguientes comandos:
 
 ```bash
 
@@ -126,19 +147,16 @@ sudo systemctl {opcion} apache2
 ```
 ##### Virtual Hosts
 ##### Permisos y usuarios
-Creo un usuario y lo compruebo que está en la carpeta home /var/www/html y en el shell /bin/bash
-
-Ahora le ponemos la contraseña paso
-
-A continuación cambiamos los permisos de la carpeta para que el usuario operadorweb sea dueño de la carpeta /var/www/html
+Al crear la máquina virtual creamos al usuario miadmin con contraseña paso y con privilegios de sudo. Una vez configurada la red y verificado el servicio, creamos el usuario admin2:
 
 ```bash
-##Le damos la posesión de la carpeta a operadorweb
-sudo chown -R operadorweb:www-data /var/www/html
+sudo adduser miadmin2                   #Creamos el usuario con contraseña paso e ignoramos el resto de datos que nos piden
+```
 
-##Le damos permisos de escritura, lectura y ejecución. Al resto de usuarios solo lectura.
-sudo chmod -R 775 /var/www/html
+Una vez creado el usuario tenemos que darle privilegios de sudo, es decir, meterle en el grupo sudoers para que pueda hacer ciertos comandos.
 
+```bash
+sudo usermod -aG sudo miadmin2          #Meter al usuario miadmin2 en el grupo sudo sin quitarle del resto de grupos que pertenece y -G indica los grupos suplementarios a los que quieres añadir el usuario.
 ```
 
 #### 1.1.3 PHP
