@@ -17,6 +17,7 @@
         - [Virtual Hosts](#virtual-hosts)
         - [Permisos y usuarios](#permisos-y-usuarios)
       - [1.1.3 PHP](#113-php)
+          - [Instalación de PHP en el servidor apache](#instalación-de-php-en-el-servidor-apache)
       - [1.1.4 MySQL](#114-mysql)
       - [1.1.5 XDebug](#115-xdebug)
       - [1.1.6 DNS](#116-dns)
@@ -156,10 +157,38 @@ sudo adduser miadmin2                   #Creamos el usuario con contraseña paso
 Una vez creado el usuario tenemos que darle privilegios de sudo, es decir, meterle en el grupo sudoers para que pueda hacer ciertos comandos.
 
 ```bash
-sudo usermod -aG sudo miadmin2          #Meter al usuario miadmin2 en el grupo sudo sin quitarle del resto de grupos que pertenece y -G indica los grupos suplementarios a los que quieres añadir el usuario.
+sudo usermod -aG sudo miadmin2          
+#Meter al usuario miadmin2 en el grupo sudo sin quitarle del resto de grupos que pertenece y -G indica los grupos suplementarios a los que quieres añadir el usuario.
 ```
 
 #### 1.1.3 PHP
+###### Instalación de PHP en el servidor apache
+Una vez actualizado el sistema y mejorado los paquetes (update y upgrade) debemos de realizar los siguientes pasos:
+```bash
+# Comprobamos que apache está instalado y activo.
+sudo systectl status apache2
+
+# Después añadimos el repositorio PPA de Ondrej para PHP:
+sudo apt install software-properties-common
+# Puede que ya venga instalado...
+
+#Añadimos el repositorio de ondrej/php y comprobamos si ha sido instalado.
+sudo add-apt-repository ppa:ondrej/php -y
+ls /etc/apt/sources.list.d/ | grep ondrej
+#Actualizamos todos los repositorios.
+sudo apt update
+```
+
+Ahora instalamos la versión PHP-FPM y los módulos de Apache. En este caso la versión instalada será la PHP 8.3. A mayores, instalaremos otras extensiónes útiles. 
+
+```bash
+# En el mismo comando va la instalación de PHP y de las extensiones.
+
+```
+---
+> **Importante**
+> 
+> 
 #### 1.1.4 MySQL
 #### 1.1.5 XDebug
 #### 1.1.6 DNS
@@ -181,7 +210,7 @@ sudo usermod -aG sudo miadmin2          #Meter al usuario miadmin2 en el grupo s
 
 ---
 
-> **Nombre y Apellidos**  
+> **Álvaro Allén Perlines**  
 > Curso: 2025/2026  
 > 2º Curso CFGS Desarrollo de Aplicaciones Web  
 > Despliegue de aplicaciones web
